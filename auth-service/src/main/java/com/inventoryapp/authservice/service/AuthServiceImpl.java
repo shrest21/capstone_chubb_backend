@@ -5,8 +5,10 @@ import com.inventoryapp.authservice.model.User;
 import com.inventoryapp.authservice.repository.UserRepository;
 import com.inventoryapp.authservice.security.JwtUtil;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -27,18 +29,15 @@ public class AuthServiceImpl implements AuthService {
     public void register(RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
-
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole("ROLE_USER");
-
         userRepository.save(user);
     }
-
     @Override
     public String login(LoginRequest request) {
 
