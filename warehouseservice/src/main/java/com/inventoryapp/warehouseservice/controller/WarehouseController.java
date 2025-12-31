@@ -18,11 +18,11 @@ public class WarehouseController {
     public Warehouse createWarehouse(@RequestBody CreateWarehouseRequest request) {
         return warehouseService.createWarehouse(request);
     }
-    @PostMapping("/{code}/stock")
+    @PostMapping("/{code}")
     public void addStock(@PathVariable String code, @RequestBody AddWarehouseStockRequest request) {
         warehouseService.addStock(code, request);
     }
-    @GetMapping("/{code}/stock")
+    @GetMapping("/{code}")
     public List<WarehouseStockResponse> getStock(@PathVariable String code) {
         return warehouseService.getWarehouseStock(code);
     }

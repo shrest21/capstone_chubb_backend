@@ -1,23 +1,22 @@
 package com.inventoryapp.warehouseservice.service;
-
 import com.inventoryapp.warehouseservice.dto.AddWarehouseStockRequest;
 import com.inventoryapp.warehouseservice.dto.CreateWarehouseRequest;
 import com.inventoryapp.warehouseservice.dto.WarehouseStockResponse;
+import com.inventoryapp.warehouseservice.feign.ProductClient;
 import com.inventoryapp.warehouseservice.model.Warehouse;
 import com.inventoryapp.warehouseservice.model.WarehouseStock;
 import com.inventoryapp.warehouseservice.repository.WarehouseRepository;
 import com.inventoryapp.warehouseservice.repository.WarehouseStockRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 public class WarehouseService {
 
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository stockRepository;
+    private final ProductClient productClient;
 
     public Warehouse createWarehouse(CreateWarehouseRequest request) {
         Warehouse warehouse = new Warehouse();
