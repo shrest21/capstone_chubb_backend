@@ -36,4 +36,15 @@ public class AuthController {
         responseLogin.setRole(response.getRole());
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body(responseLogin);
     }
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(){
+        ResponseCookie deleteCookie = ResponseCookie.from("jwt", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body("Logout Succesful");
+    }
 }
