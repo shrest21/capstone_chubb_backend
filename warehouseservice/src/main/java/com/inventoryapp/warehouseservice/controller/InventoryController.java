@@ -24,7 +24,8 @@ public class InventoryController {
         return inventoryService.checkAvailability(request);
     }
     @PostMapping("/stock/reduce")
-    public void deductStock(@RequestBody ReduceStockRequest request) {
+    public String deductStock(@RequestBody ReduceStockRequest request) {
         inventoryService.reduceStock(request);
+        return "Stock reduced succesfully";
     }
 }
