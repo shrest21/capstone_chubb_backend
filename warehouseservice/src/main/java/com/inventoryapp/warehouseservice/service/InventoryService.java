@@ -21,10 +21,10 @@ public class InventoryService {
         return stockRepository.findAll().stream().filter(s -> s.getProductId().equals(productId))
                 .map(s -> new GlobalStockResponse(s.getWarehouse().getCode(), s.getQuantity())).toList();
     }
-    public StockAvailableResponse checkAvailability(CheckStockRequest request) {
+    public StockAvailableResponse checkAvailability(Long productId, Integer quantity) {
         return stockRepository.findAll().stream()
-                .filter(s -> s.getProductId().equals(request.getProductId()))
-                .filter(s -> s.getQuantity() >= request.getQuantity()).findFirst()
+                .filter(s -> s.getProductId().equals(productId))
+                .filter(s -> s.getQuantity() >= quantity).findFirst()
                 .map(s -> new StockAvailableResponse(true, s.getWarehouse().getCode()))
                 .orElse(new StockAvailableResponse(false, null));
     }

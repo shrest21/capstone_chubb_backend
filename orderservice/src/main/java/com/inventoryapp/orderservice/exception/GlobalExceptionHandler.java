@@ -10,8 +10,12 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(OrderNotFoundException.class)
-    public ResponseEntity<?> handle(OrderNotFoundException ex) {
-        return ResponseEntity.status(404).body(Map.of("error", ex.getMessage()));
+    public ResponseEntity<?> handle(OrderNotFoundException error) {
+        return ResponseEntity.status(404).body(Map.of("error", error.getMessage()));
+    }
+    @ExceptionHandler(LessStockException.class)
+    public ResponseEntity<?> handle(LessStockException error) {
+        return ResponseEntity.status(404).body(Map.of("error", error.getMessage()));
     }
 }
 

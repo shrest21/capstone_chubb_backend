@@ -1,10 +1,10 @@
 package com.inventoryapp.orderservice.service;
-import com.inventoryapp.orderservice.dto.CreateOrderRequest;
-import com.inventoryapp.orderservice.dto.OrderItemRequest;
-import com.inventoryapp.orderservice.dto.OrderResponse;
+import com.inventoryapp.orderservice.dto.*;
+import com.inventoryapp.orderservice.exception.LessStockException;
 import com.inventoryapp.orderservice.exception.OrderNotFoundException;
+import com.inventoryapp.orderservice.feign.WarehouseClient;
 import com.inventoryapp.orderservice.feign.ProductClient;
-import com.inventoryapp.orderservice.feign.ProductFeignResponse;
+import com.inventoryapp.orderservice.feign.ProductResponse;
 import com.inventoryapp.orderservice.model.Order;
 import com.inventoryapp.orderservice.model.OrderStatus;
 import com.inventoryapp.orderservice.model.OrderStatusHistory;
@@ -24,11 +24,19 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderStatusHistoryRepository historyRepository;
     private final ProductClient productClient;
+    private final WarehouseClient warehouseClient;
 
     public OrderResponse createOrder(CreateOrderRequest request) {
         BigDecimal totalAmount = BigDecimal.ZERO;
+        for(OrderItemRequest item:request.getItems())
+        {
+            StockAvailableResponse check = warehouseClient.checkStock(item.getProductId(),item.getQuantity());
+            if(!check.isAvailable()){
+                throw new LessStockException(item.getProductId());
+            }
+        }
         for (OrderItemRequest item : request.getItems()) {
-            ProductFeignResponse product = productClient.getProductById(item.getProductId());
+            ProductResponse product = productClient.getProductById(item.getProductId());
             BigDecimal itemTotal = product.getPrice().multiply(BigDecimal.valueOf(item.getQuantity()));
             totalAmount = totalAmount.add(itemTotal);
         }

@@ -20,8 +20,8 @@ public class InventoryController {
         return inventoryService.getGlobalStock(productId);
     }
     @GetMapping("/stock/check")
-    public StockAvailableResponse checkStock(@RequestBody CheckStockRequest request) {
-        return inventoryService.checkAvailability(request);
+    public StockAvailableResponse checkStock(@RequestParam Long productId,@RequestParam Integer quantity){
+        return inventoryService.checkAvailability(productId,quantity);
     }
     @PostMapping("/stock/reduce")
     public String deductStock(@RequestBody ReduceStockRequest request) {

@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductFeignResponse {
+public class ProductResponse {
     private Long id;
     private String name;
     private String brand;
