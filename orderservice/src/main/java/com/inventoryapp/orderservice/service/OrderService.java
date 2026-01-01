@@ -46,6 +46,14 @@ public class OrderService {
         order.setStatus(OrderStatus.CREATED);
         order.setCreatedAt(LocalDateTime.now());
         Order saved = orderRepository.save(order);
+        for(OrderItemRequest item:request.getItems())
+        {
+            ReduceStockRequest reduceRequest = new ReduceStockRequest();
+            reduceRequest.setProductId(item.getProductId());
+            reduceRequest.setQuantity(item.getQuantity());
+            reduceRequest.setOrderId(saved.getId());
+            warehouseClient.deductStock(reduceRequest);
+        }
         return new OrderResponse(saved.getId(), saved.getStatus().name(), saved.getTotalAmount());
     }
     public Order getOrder(Long id) {
