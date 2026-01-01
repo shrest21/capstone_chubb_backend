@@ -1,12 +1,12 @@
 package com.inventoryapp.warehouseservice.controller;
 
+import com.inventoryapp.warehouseservice.dto.CheckStockRequest;
 import com.inventoryapp.warehouseservice.dto.GlobalStockResponse;
+import com.inventoryapp.warehouseservice.dto.ReduceStockRequest;
+import com.inventoryapp.warehouseservice.dto.StockAvailableResponse;
 import com.inventoryapp.warehouseservice.service.InventoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -15,8 +15,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InventoryController {
     private final InventoryService inventoryService;
-    @GetMapping("/stock/product/{productId}")
+    @GetMapping("/stock/{productId}")
     public List<GlobalStockResponse> getGlobalStock(@PathVariable Long productId){
         return inventoryService.getGlobalStock(productId);
+    }
+    @GetMapping("/stock/check")
+    public StockAvailableResponse checkStock(@RequestBody CheckStockRequest request) {
+        return inventoryService.checkAvailability(request);
+    }
+    @PostMapping("/stock/reduce")
+    public void deductStock(@RequestBody ReduceStockRequest request) {
+        inventoryService.reduceStock(request);
     }
 }
