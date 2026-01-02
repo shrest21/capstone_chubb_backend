@@ -14,7 +14,10 @@ public class SecurityConfig {
         http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**").permitAll()
+                        .pathMatchers("/auth/**","/warehouse/**",
+                                "/inventory/**",
+                                "/orders/**",
+                                "/products/**").permitAll()
                         .anyExchange().authenticated()
                 );
 
