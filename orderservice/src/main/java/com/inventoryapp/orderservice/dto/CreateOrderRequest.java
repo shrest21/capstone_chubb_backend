@@ -12,5 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CreateOrderRequest {
     private Long customerId;
+    private String customerName;
+    private String address;
     private List<OrderItemRequest> items;
 }

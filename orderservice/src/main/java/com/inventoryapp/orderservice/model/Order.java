@@ -26,7 +26,8 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
-
+    private String customerName;
+    private String address;
     private BigDecimal totalAmount;
 
     private String warehouseCode;

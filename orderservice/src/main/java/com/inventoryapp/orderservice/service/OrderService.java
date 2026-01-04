@@ -42,6 +42,8 @@ public class OrderService {
         }
         Order order = new Order();
         order.setCustomerId(request.getCustomerId());
+        order.setCustomerName(request.getCustomerName());
+        order.setAddress(request.getAddress());
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.CREATED);
         order.setCreatedAt(LocalDateTime.now());
@@ -54,7 +56,7 @@ public class OrderService {
             reduceRequest.setOrderId(saved.getId());
             warehouseClient.deductStock(reduceRequest);
         }
-        return new OrderResponse(saved.getId(), saved.getStatus().name(), saved.getTotalAmount());
+        return new OrderResponse(saved.getId(), saved.getCustomerName(), saved.getAddress(), saved.getStatus().name(), saved.getTotalAmount());
     }
     public Order getOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
