@@ -31,6 +31,7 @@ public class AuthController {
                 .sameSite("Lax")
                 .build();
         LoginResponse responseLogin = new LoginResponse();
+        responseLogin.setUserId(response.getUserId());
         responseLogin.setName(response.getName());
         responseLogin.setEmail(response.getEmail());
         responseLogin.setRole(response.getRole());
