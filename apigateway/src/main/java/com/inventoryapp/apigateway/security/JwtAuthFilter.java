@@ -34,7 +34,6 @@ public class JwtAuthFilter implements WebFilter {
         }
 
         try {
-            // Use the same parsing method as Auth Service
             Claims claims = Jwts.parser()
                     .setSigningKey(secret)
                     .parseClaimsJws(jwtCookie.getValue())
@@ -43,9 +42,9 @@ public class JwtAuthFilter implements WebFilter {
             String email = claims.getSubject();
             String role = claims.get("role", String.class);
 
-            System.out.println("✅ JWT validated - User: " + email + ", Role: " + role);
+            System.out.println("JWT validated - User: " + email + ", Role: " + role);
 
-            // Add ROLE_ prefix for Spring Security
+            // Adding ROLE_ prefix for Spring Security
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(
                             email,
@@ -57,7 +56,7 @@ public class JwtAuthFilter implements WebFilter {
                     .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
 
         } catch (Exception e) {
-            System.out.println("❌ JWT validation failed: " + e.getMessage());
+            System.out.println("JWT validation failed: " + e.getMessage());
             return chain.filter(exchange);
         }
     }
