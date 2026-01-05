@@ -1,4 +1,5 @@
 package com.inventoryapp.orderservice.service;
+import com.inventoryapp.orderservice.config.RabbitMQConstants;
 import com.inventoryapp.orderservice.dto.*;
 import com.inventoryapp.orderservice.exception.LessStockException;
 import com.inventoryapp.orderservice.exception.OrderNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +27,7 @@ public class OrderService {
     private final OrderStatusHistoryRepository historyRepository;
     private final ProductClient productClient;
     private final WarehouseClient warehouseClient;
+    private final RabbitTemplate rabbitTemplate;
 
     public OrderResponse createOrder(CreateOrderRequest request) {
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -47,7 +50,18 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
         order.setStatus(OrderStatus.CREATED);
         order.setCreatedAt(LocalDateTime.now());
+        order.setEmail(request.getEmail());
         Order saved = orderRepository.save(order);
+        OrderCreatedEvent event = new OrderCreatedEvent();
+        event.setOrderId(saved.getId());
+        event.setUserEmail(saved.getEmail());
+        event.setTotalAmount(saved.getTotalAmount());
+
+        rabbitTemplate.convertAndSend(
+                RabbitMQConstants.ORDER_EXCHANGE,
+                RabbitMQConstants.ORDER_CREATED_ROUTING_KEY,
+                event
+        );
         for(OrderItemRequest item:request.getItems())
         {
             ReduceStockRequest reduceRequest = new ReduceStockRequest();
@@ -56,7 +70,7 @@ public class OrderService {
             reduceRequest.setOrderId(saved.getId());
             warehouseClient.deductStock(reduceRequest);
         }
-        return new OrderResponse(saved.getId(), saved.getCustomerName(), saved.getAddress(), saved.getStatus().name(), saved.getTotalAmount());
+        return new OrderResponse(saved.getId(), saved.getCustomerName(), saved.getAddress(), saved.getEmail(), saved.getStatus().name(), saved.getTotalAmount());
     }
     public Order getOrder(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));

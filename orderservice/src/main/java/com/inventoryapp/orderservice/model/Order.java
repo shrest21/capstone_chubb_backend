@@ -28,6 +28,7 @@ public class Order {
     private OrderStatus status;
     private String customerName;
     private String address;
+    private String email;
     private BigDecimal totalAmount;
 
     private String warehouseCode;

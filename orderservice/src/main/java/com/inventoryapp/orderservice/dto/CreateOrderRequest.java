@@ -13,6 +13,7 @@ import java.util.List;
 public class CreateOrderRequest {
     private Long customerId;
     private String customerName;
+    private String email;
     private String address;
     private List<OrderItemRequest> items;
 }
