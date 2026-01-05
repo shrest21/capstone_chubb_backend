@@ -1,6 +1,7 @@
 package com.inventoryapp.warehouseservice.controller;
 import com.inventoryapp.warehouseservice.dto.AddWarehouseStockRequest;
 import com.inventoryapp.warehouseservice.dto.CreateWarehouseRequest;
+import com.inventoryapp.warehouseservice.dto.WarehouseResponse;
 import com.inventoryapp.warehouseservice.dto.WarehouseStockResponse;
 import com.inventoryapp.warehouseservice.model.Warehouse;
 import com.inventoryapp.warehouseservice.service.WarehouseService;
@@ -25,5 +26,9 @@ public class WarehouseController {
     @GetMapping("/{code}")
     public List<WarehouseStockResponse> getStock(@PathVariable String code) {
         return warehouseService.getWarehouseStock(code);
+    }
+    @GetMapping
+    public List<WarehouseResponse> getAllWarehouses() {
+        return warehouseService.getAllWarehouses();
     }
 }

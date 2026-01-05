@@ -1,6 +1,7 @@
 package com.inventoryapp.warehouseservice.service;
 import com.inventoryapp.warehouseservice.dto.AddWarehouseStockRequest;
 import com.inventoryapp.warehouseservice.dto.CreateWarehouseRequest;
+import com.inventoryapp.warehouseservice.dto.WarehouseResponse;
 import com.inventoryapp.warehouseservice.dto.WarehouseStockResponse;
 import com.inventoryapp.warehouseservice.feign.ProductClient;
 import com.inventoryapp.warehouseservice.model.Warehouse;
@@ -41,6 +42,12 @@ public class WarehouseService {
                     String productName = productClient.getProductById(stock.getProductId()).getName();
                     return new WarehouseStockResponse(stock.getProductId(), productName, stock.getQuantity());
                 })
+                .toList();
+    }
+    public List<WarehouseResponse> getAllWarehouses() {
+        return warehouseRepository.findAll()
+                .stream()
+                .map(w -> new WarehouseResponse(w.getCode(), w.getLocation()))
                 .toList();
     }
 }
