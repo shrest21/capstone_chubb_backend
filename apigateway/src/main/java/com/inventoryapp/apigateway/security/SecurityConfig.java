@@ -32,7 +32,7 @@ public class SecurityConfig {
                         .pathMatchers("/auth/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/products/**").permitAll()
                         .pathMatchers("/products/**").hasRole("ADMIN")
-                        .pathMatchers("/warehouse/**", "/inventory/**")
+                        .pathMatchers("/warehouses/**", "/inventory/**")
                         .hasAnyRole("ADMIN", "WAREHOUSE_MANAGER")
                         .pathMatchers(HttpMethod.POST, "/orders/**").permitAll()
                         .pathMatchers(HttpMethod.GET, "/orders/**").permitAll()
