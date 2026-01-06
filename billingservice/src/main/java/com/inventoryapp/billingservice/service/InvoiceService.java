@@ -42,6 +42,6 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
     }
     private InvoiceResponse mapToResponse(Invoice invoice) {
-        return new InvoiceResponse(invoice.getId(), invoice.getOrderId(), invoice.getAmount());
+        return new InvoiceResponse(invoice.getId(), invoice.getOrderId(), invoice.getAmount(),invoice.getStatus());
     }
 }
