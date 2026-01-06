@@ -3,6 +3,7 @@ import com.inventoryapp.orderservice.config.RabbitMQConstants;
 import com.inventoryapp.orderservice.dto.*;
 import com.inventoryapp.orderservice.exception.LessStockException;
 import com.inventoryapp.orderservice.exception.OrderNotFoundException;
+import com.inventoryapp.orderservice.feign.BillingClient;
 import com.inventoryapp.orderservice.feign.WarehouseClient;
 import com.inventoryapp.orderservice.feign.ProductClient;
 import com.inventoryapp.orderservice.feign.ProductResponse;
@@ -28,6 +29,7 @@ public class OrderService {
     private final ProductClient productClient;
     private final WarehouseClient warehouseClient;
     private final RabbitTemplate rabbitTemplate;
+    private final BillingClient billingClient;
 
     public OrderResponse createOrder(CreateOrderRequest request) {
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -56,7 +58,7 @@ public class OrderService {
         event.setOrderId(saved.getId());
         event.setUserEmail(saved.getEmail());
         event.setTotalAmount(saved.getTotalAmount());
-
+        billingClient.createInvoice(saved.getId(), saved.getTotalAmount());
         rabbitTemplate.convertAndSend(
                 RabbitMQConstants.ORDER_EXCHANGE,
                 RabbitMQConstants.ORDER_CREATED_ROUTING_KEY,
