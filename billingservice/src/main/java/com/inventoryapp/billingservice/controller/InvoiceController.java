@@ -4,6 +4,8 @@ import com.inventoryapp.billingservice.dto.InvoiceResponse;
 import com.inventoryapp.billingservice.dto.UpdatePaymentRequest;
 import com.inventoryapp.billingservice.service.InvoiceService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +20,7 @@ public class InvoiceController {
     private final InvoiceService invoiceService;
     @PostMapping()
     public ResponseEntity<InvoiceResponse> createInvoice(@RequestParam Long orderId, @RequestParam BigDecimal amount) {
-        return ResponseEntity.ok(invoiceService.createInvoice(orderId, amount));
+        return ResponseEntity.status(HttpStatus.CREATED).body(invoiceService.createInvoice(orderId, amount));
     }
     @GetMapping()
     public ResponseEntity<List<InvoiceResponse>> getAllInvoices() {
