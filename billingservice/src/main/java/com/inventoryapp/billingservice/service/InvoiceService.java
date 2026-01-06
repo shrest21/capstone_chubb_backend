@@ -30,11 +30,6 @@ public class InvoiceService {
                 .map(this::mapToResponse)
                 .toList();
     }
-    public InvoiceResponse getInvoiceByOrderId(Long orderId) {
-        Invoice invoice = invoiceRepository.findByOrderId(orderId)
-                .orElseThrow(() -> new RuntimeException("Invoice not found"));
-        return mapToResponse(invoice);
-    }
     public void updatePaymentStatus(Long invoiceId, PaymentStatus status) {
         Invoice invoice = invoiceRepository.findById(invoiceId)
                 .orElseThrow(() -> new RuntimeException("Invoice not found"));
@@ -42,6 +37,6 @@ public class InvoiceService {
         invoiceRepository.save(invoice);
     }
     private InvoiceResponse mapToResponse(Invoice invoice) {
-        return new InvoiceResponse(invoice.getId(), invoice.getOrderId(), invoice.getAmount(),invoice.getStatus());
+        return new InvoiceResponse(invoice.getId(), invoice.getOrderId(), invoice.getAmount(),invoice.getStatus(),invoice.getCreatedAt());
     }
 }
