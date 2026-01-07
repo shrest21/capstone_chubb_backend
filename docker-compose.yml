@@ -1,0 +1,251 @@
+version: '3.8'
+
+services:
+  # Single PostgreSQL with Multiple Databases
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres  # Default database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-databases.sql:/docker-entrypoint-initdb.d/init-databases.sql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"   # AMQP port
+      - "15672:15672" # Management UI
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Eureka Server (First)
+  eurekaserver:
+    build: ./eurekaserver
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  # Config Server (Second)
+  configserver:
+    build: ./configserver
+    container_name: configserver
+    ports:
+      - "8888:8888"
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  # API Gateway
+  apigateway:
+    build: ./apigateway
+    container_name: apigateway
+    ports:
+      - "8085:8085"
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+    restart: on-failure
+
+  # Auth Service
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/authdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    restart: on-failure
+
+  # Product Service
+  productservice:
+    build: ./productservice
+    container_name: productservice
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/productdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    restart: on-failure
+
+  # Order Service
+  orderservice:
+    build: ./orderservice
+    container_name: orderservice
+    ports:
+      - "8084:8084"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/orderdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    restart: on-failure
+
+  # Warehouse Service
+  warehouseservice:
+    build: ./warehouseservice
+    container_name: warehouseservice
+    ports:
+      - "8086:8086"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/warehousedb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    restart: on-failure
+
+  # Billing Service
+  billingservice:
+    build: ./billingservice
+    container_name: billingservice
+    ports:
+      - "8087:8087"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/billingdb
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    restart: on-failure
+
+  # Email Service
+  emailservicecapstone:
+    build: ./emailservicecapstone
+    container_name: emailservicecapstone
+    ports:
+      - "8088:8088"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
+      configserver:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    environment:
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:8761/eureka
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    restart: on-failure
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
