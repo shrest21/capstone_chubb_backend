@@ -1,5 +1,6 @@
 package com.inventoryapp.orderservice.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,5 +11,6 @@ import com.inventoryapp.orderservice.model.OrderStatus;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UpdateStatusRequest {
+    @NotNull(message = "Order status is required")
     private OrderStatus status;
 }

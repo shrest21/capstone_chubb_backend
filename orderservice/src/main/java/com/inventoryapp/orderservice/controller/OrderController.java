@@ -8,6 +8,7 @@ import com.inventoryapp.orderservice.model.Order;
 import com.inventoryapp.orderservice.model.OrderStatus;
 import com.inventoryapp.orderservice.model.OrderStatusHistory;
 import com.inventoryapp.orderservice.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,7 +24,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public OrderResponse create(@RequestBody CreateOrderRequest request) {
+    public OrderResponse create(@Valid @RequestBody CreateOrderRequest request) {
         return orderService.createOrder(request);
     }
     @GetMapping("/{orderId}")
@@ -40,7 +41,7 @@ public class OrderController {
         return orderService.getOrder(id).getStatusHistory();
     }
     @PutMapping("/{id}/status")
-    public Order updateStatus(@PathVariable Long id, @RequestBody UpdateStatusRequest req) {
+    public Order updateStatus(@PathVariable Long id, @Valid @RequestBody UpdateStatusRequest req) {
         return orderService.updateStatus(id, req.getStatus(), "admin");
     }
     @PutMapping("/cancel/{id}")
