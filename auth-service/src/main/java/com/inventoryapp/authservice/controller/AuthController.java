@@ -2,6 +2,7 @@ package com.inventoryapp.authservice.controller;
 
 import com.inventoryapp.authservice.dto.*;
 import com.inventoryapp.authservice.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
@@ -16,12 +17,12 @@ public class AuthController {
         this.authService = authService;
     }
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequest request) {
         authService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully");
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginServiceResult response = authService.login(request);
         ResponseCookie cookie = ResponseCookie.from("jwt", response.getToken())
                 .httpOnly(true)

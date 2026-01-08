@@ -10,14 +10,16 @@
         <module name="eurekaserver" />
         <module name="apigateway" />
         <module name="config-server" />
+        <module name="billingservice" />
         <module name="email-service" />
+        <module name="productservice" />
       </profile>
       <profile name="Annotation profile for orderservice" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="false">
-          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.34/lombok-1.18.34.jar" />
         </processorPath>
         <module name="orderservice" />
       </profile>
@@ -30,36 +32,18 @@
         </processorPath>
         <module name="auth-service" />
       </profile>
-      <profile name="Annotation profile for billingservice" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="/home/shrest/.m2/repository/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
-        </processorPath>
-        <module name="billingservice" />
-      </profile>
-      <profile name="Annotation profile for productservice" enabled="true">
-        <sourceOutputDir name="target/generated-sources/annotations" />
-        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
-        <outputRelativeToContentRoot value="true" />
-        <processorPath useClasspath="false">
-          <entry name="/home/shrest/.m2/repository/org/projectlombok/lombok/1.18.42/lombok-1.18.42.jar" />
-        </processorPath>
-        <module name="productservice" />
-      </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="apigateway" options="" />
-      <module name="auth-service" options="" />
-      <module name="billingservice" options="-parameters" />
-      <module name="config-server" options="-parameters" />
-      <module name="email-service" options="-parameters" />
-      <module name="eurekaserver" options="" />
-      <module name="orderservice" options="" />
-      <module name="productservice" options="-parameters" />
+      <module name="apigateway" options="-parameters" />
+      <module name="auth-service" options="-parameters" />
+      <module name="billingservice" options="" />
+      <module name="config-server" options="" />
+      <module name="email-service" options="" />
+      <module name="eurekaserver" options="-parameters" />
+      <module name="orderservice" options="-parameters" />
+      <module name="productservice" options="" />
     </option>
   </component>
 </project>
