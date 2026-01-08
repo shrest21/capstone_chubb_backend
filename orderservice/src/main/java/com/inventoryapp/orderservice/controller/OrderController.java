@@ -1,9 +1,6 @@
 package com.inventoryapp.orderservice.controller;
 
-import com.inventoryapp.orderservice.dto.CreateOrderRequest;
-import com.inventoryapp.orderservice.dto.OrderResponse;
-import com.inventoryapp.orderservice.dto.OrderSummaryResponse;
-import com.inventoryapp.orderservice.dto.UpdateStatusRequest;
+import com.inventoryapp.orderservice.dto.*;
 import com.inventoryapp.orderservice.model.Order;
 import com.inventoryapp.orderservice.model.OrderStatus;
 import com.inventoryapp.orderservice.model.OrderStatusHistory;
@@ -48,5 +45,9 @@ public class OrderController {
     public Map<String, String> cancel(@PathVariable Long id) {
         Order o = orderService.updateStatus(id, OrderStatus.CANCELLED, "customer");
         return Map.of("orderId", o.getId().toString(), "status", o.getStatus().name(), "message", "Order cancelled successfully");
+    }
+    @GetMapping
+    public List<OrderStatusResponse> getAllOrders() {
+        return orderService.getAllOrderStatus();
     }
 }

@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
@@ -95,5 +97,10 @@ public class OrderService {
         h.setChangedBy(by);
         h.setChangedAt(LocalDateTime.now());
         historyRepository.save(h);
+    }
+    public List<OrderStatusResponse> getAllOrderStatus() {
+        return orderRepository.findAll().stream()
+                .map(order -> new OrderStatusResponse(order.getId(), order.getStatus().name()))
+                .toList();
     }
 }
