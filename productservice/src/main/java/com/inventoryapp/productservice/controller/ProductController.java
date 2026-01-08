@@ -3,6 +3,7 @@ package com.inventoryapp.productservice.controller;
 import com.inventoryapp.productservice.dto.ProductRequest;
 import com.inventoryapp.productservice.dto.ProductResponse;
 import com.inventoryapp.productservice.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +17,7 @@ import java.util.List;
 public class ProductController {
     private final ProductService productService;
     @PostMapping
-    public ResponseEntity<ProductResponse> createProduct(@RequestBody ProductRequest request) {
+    public ResponseEntity<ProductResponse> createProduct(@Valid @RequestBody ProductRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productService.createProduct(request));
     }
     @GetMapping
