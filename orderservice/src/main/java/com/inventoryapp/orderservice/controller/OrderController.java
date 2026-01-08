@@ -39,7 +39,7 @@ public class OrderController {
     }
     @PutMapping("/{id}/status")
     public Order updateStatus(@PathVariable Long id, @Valid @RequestBody UpdateStatusRequest req) {
-        return orderService.updateStatus(id, req.getStatus(), "admin");
+        return orderService.updateStatus(id, req.getStatus(), req.getRole());
     }
     @PutMapping("/cancel/{id}")
     public Map<String, String> cancel(@PathVariable Long id) {

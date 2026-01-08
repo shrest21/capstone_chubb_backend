@@ -13,4 +13,6 @@ import com.inventoryapp.orderservice.model.OrderStatus;
 public class UpdateStatusRequest {
     @NotNull(message = "Order status is required")
     private OrderStatus status;
+    @NotNull(message = "Role of who updated should be provided")
+    private String role;
 }
