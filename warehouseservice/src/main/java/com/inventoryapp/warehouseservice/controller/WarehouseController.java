@@ -5,6 +5,7 @@ import com.inventoryapp.warehouseservice.dto.WarehouseResponse;
 import com.inventoryapp.warehouseservice.dto.WarehouseStockResponse;
 import com.inventoryapp.warehouseservice.model.Warehouse;
 import com.inventoryapp.warehouseservice.service.WarehouseService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,11 +19,11 @@ public class WarehouseController {
 
     private final WarehouseService warehouseService;
     @PostMapping
-    public ResponseEntity<Warehouse> createWarehouse(@RequestBody CreateWarehouseRequest request) {
+    public ResponseEntity<Warehouse> createWarehouse(@Valid @RequestBody CreateWarehouseRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(warehouseService.createWarehouse(request));
     }
     @PostMapping("/{code}")
-    public void addStock(@PathVariable String code, @RequestBody AddWarehouseStockRequest request) {
+    public void addStock(@PathVariable String code, @Valid @RequestBody AddWarehouseStockRequest request) {
         warehouseService.addStock(code, request);
     }
     @GetMapping("/{code}")
