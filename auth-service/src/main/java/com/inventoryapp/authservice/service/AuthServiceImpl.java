@@ -43,4 +43,18 @@ public class AuthServiceImpl implements AuthService {
         String token = jwtUtil.generateToken(user.getEmail(), roleForJwt);
         return new LoginServiceResult(user.getId(),token, user.getName(), user.getEmail(), user.getRole());
     }
+    @Override
+    public void registerWarehouseManager(RegisterRequest request) {
+
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+        }
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole("ROLE_WAREHOUSE_MANAGER");
+        userRepository.save(user);
+    }
+
 }

@@ -49,4 +49,10 @@ public class AuthController {
                 .build();
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, deleteCookie.toString()).body("Logout Succesful");
     }
+    @PostMapping("/warehousemanager")
+    public ResponseEntity<String> registerWarehouseManager(@Valid @RequestBody RegisterRequest request) {
+        authService.registerWarehouseManager(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Warehouse Manager registered successfully");
+    }
+
 }
